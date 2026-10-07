@@ -186,7 +186,7 @@ function ScrubFilm() {
         src={scrubSrc(index)}
         alt="Figura no gelo com um pinguim. Mova o cursor para avançar a cena."
         width={840}
-        height={884}
+        height={734}
         className="h-auto w-full bg-ink object-contain"
       />
       <div className="mt-3 flex items-center gap-3">
@@ -673,28 +673,28 @@ export function HomePage() {
 
       <main id="conteudo">
         <section id="topo" className="relative overflow-hidden bg-ink">
-          <div className="relative mx-auto max-w-5xl px-5 pt-6">
-            <ScrubFilm />
-            <div className="pointer-events-none absolute top-8 left-6 w-[38%] max-w-[17rem] sm:top-12 sm:left-10">
-              <p className="text-xs font-medium tracking-widest text-cyan uppercase">Consultoria Digital</p>
-              <h1 className="mt-3 text-3xl leading-display font-bold tracking-tight text-balance sm:text-4xl">
-                Estratégia. Inovação. <span className="text-cyan">Resultados.</span>
-              </h1>
-              <p className="pointer-events-auto mt-4 text-sm text-pretty text-snow">
-                Automação, websites e sistemas sob medida. A cena anda com o cursor.
-              </p>
-              <div className="pointer-events-auto mt-5 flex flex-col gap-3">
-                <a href="#laboratorio" className="press inline-flex h-11 items-center justify-center rounded-full bg-cyan px-5 text-sm font-medium text-ink">
-                  Abrir o laboratório
-                </a>
-                <a
-                  href="#contato"
-                  className="press inline-flex h-11 items-center justify-center rounded-full border border-snow/30 px-5 text-sm font-medium text-snow"
-                >
-                  Falar do projeto
-                </a>
-              </div>
+          <div className="mx-auto max-w-5xl px-5 pt-10">
+            <p className="text-xs font-medium tracking-widest text-cyan uppercase">Consultoria Digital</p>
+            <h1 className="mt-3 max-w-xl text-4xl leading-display font-bold tracking-tight text-balance sm:text-5xl">
+              Estratégia. Inovação. <span className="text-cyan">Resultados.</span>
+            </h1>
+            <p className="mt-4 max-w-md text-pretty text-muted">
+              Automação, websites e sistemas sob medida. A cena anda com o cursor.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <a href="#laboratorio" className="press inline-flex h-12 items-center justify-center rounded-full bg-cyan px-6 text-sm font-medium text-ink">
+                Abrir o laboratório
+              </a>
+              <a
+                href="#contato"
+                className="press inline-flex h-12 items-center justify-center rounded-full border border-cyan/40 px-6 text-sm font-medium text-snow"
+              >
+                Falar do projeto
+              </a>
             </div>
+          </div>
+          <div className="mx-auto max-w-5xl px-5 pt-4">
+            <ScrubFilm />
           </div>
         </section>
 
