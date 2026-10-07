@@ -173,28 +173,27 @@ function ScrubFilm() {
 
     let raf = 0;
     const tick = () => {
-      shown.current += (target.current - shown.current) * 0.28;
+      if (window.matchMedia("(max-width: 1023px)").matches) onScroll();
+      shown.current += (target.current - shown.current) * (window.matchMedia("(max-width: 1023px)").matches ? 0.62 : 0.28);
       const next = 1 + Math.round(shown.current * (SCRUB_FRAMES - 1));
       setIndex((current) => (current === next ? current : next));
       raf = requestAnimationFrame(tick);
     };
-    const onMove = (event: PointerEvent) => {
-      const width = window.innerWidth || 1;
-      target.current = Math.min(1, Math.max(0, event.clientX / width));
-    };
     const onScroll = () => {
       const stage = stageRef.current;
       if (!stage) return;
-      const distance = stage.offsetHeight - window.innerHeight;
-      const passed = Math.min(Math.max(-stage.getBoundingClientRect().top, 0), Math.max(distance, 0));
-      target.current = distance > 0 ? passed / distance : 0;
+      const top = stage.getBoundingClientRect().top;
+      const travel = Math.max(stage.offsetHeight - window.innerHeight, 1);
+      const passed = window.innerHeight * 0.55 - top;
+      target.current = Math.min(1, Math.max(0, passed / travel));
     };
-    if (mobile) {
-      window.addEventListener("scroll", onScroll, { passive: true });
-      onScroll();
-    } else {
-      window.addEventListener("pointermove", onMove, { passive: true });
-    }
+    const onMove = (event: PointerEvent) => {
+      if (window.matchMedia("(max-width: 1023px)").matches) return;
+      target.current = Math.min(1, Math.max(0, event.clientX / (window.innerWidth || 1)));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pointermove", onMove, { passive: true });
+    onScroll();
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
@@ -204,14 +203,14 @@ function ScrubFilm() {
   }, [mobile]);
 
   return (
-    <div ref={stageRef} className={mobile ? "relative h-[230vh]" : undefined}>
-      <figure className={mobile ? "sticky top-20" : undefined}>
+    <div ref={stageRef} className={mobile ? "relative h-[320vh]" : undefined}>
+      <figure className={mobile ? "sticky top-16 z-10" : undefined}>
         <img
           src={scrubSrc(index)}
           alt="Figura no gelo com um pinguim. No celular, role a tela para ele andar."
           width={840}
           height={734}
-          className="h-auto w-full bg-ink object-contain"
+          className={mobile ? "mx-auto h-auto max-h-[68vh] w-full object-contain" : "h-auto w-full bg-ink object-contain"}
         />
         <div className="mt-3 flex items-center gap-3">
           <p className="text-xs font-medium tracking-widest text-cyan uppercase">{mobile ? "Role para a frente" : "Mova o cursor"}</p>
@@ -697,7 +696,7 @@ export function HomePage() {
       </nav>
 
       <main id="conteudo">
-        <section id="topo" className="relative overflow-hidden bg-ink">
+        <section id="topo" className="relative bg-ink">
           <div className="mx-auto max-w-5xl px-5 pt-10">
             <p className="text-xs font-medium tracking-widest text-cyan uppercase">Consultoria Digital</p>
             <h1 className="mt-3 max-w-xl text-4xl leading-display font-bold tracking-tight text-balance sm:text-5xl">
