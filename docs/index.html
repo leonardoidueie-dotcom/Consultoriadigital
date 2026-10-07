@@ -45,12 +45,18 @@
       .card strong { display: block; font-size: 22px; }
       .card p { color: var(--muted); }
       footer { padding: 28px 0 48px; color: var(--muted); font-size: 14px; }
+      .teste { margin-top: 12px; border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent); background: var(--surface); border-radius: 16px; padding: 12px 14px; }
+      .teste p { margin: 0; }
+      .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; text-align: center; }
+      .nums span { display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+      .nums strong { font-size: 18px; }
+      .nums strong.cyan { color: var(--cyan); }
       @media (max-width: 800px) {
         nav { display: none; }
         .grid.three, .grid.two { grid-template-columns: 1fr; }
         .runway { height: 320vh; }
         .runway figure { position: sticky; top: 64px; }
-        .runway img { max-height: 68vh; object-fit: contain; }
+        .runway img { max-height: 50vh; width: 100%; object-fit: contain; }
       }
     </style>
   </head>
@@ -79,6 +85,15 @@
           <div class="meter">
             <p id="dica">Mova o cursor</p>
             <div class="track"><i id="barra"></i></div>
+          </div>
+          <div class="teste" id="teste">
+            <p class="kicker" id="fase">Teste ao vivo · Diagnóstico</p>
+            <p id="linha">O fluxo ainda é manual. O teste mede a fila.</p>
+            <div class="nums">
+              <div><span>Passo</span><strong id="passo">1/48</strong></div>
+              <div><span>Horas</span><strong class="cyan" id="horas">0h</strong></div>
+              <div><span>Manuais</span><strong id="manuais">14</strong></div>
+            </div>
           </div>
         </figure>
       </div>
@@ -135,6 +150,25 @@
         const src = frame(index);
         if (img.getAttribute("src") !== src) img.src = src;
         bar.style.width = Math.round(shown * 100) + "%";
+        const fase = document.getElementById("fase");
+        const linha = document.getElementById("linha");
+        const phase = shown < 0.25 ? "Diagnóstico" : shown < 0.5 ? "Automação" : shown < 0.75 ? "Site no ar" : "Resultado";
+        const text =
+          shown < 0.25
+            ? "O fluxo ainda é manual. O teste mede a fila."
+            : shown < 0.5
+              ? "A automação entra. As etapas começam a cair."
+              : shown < 0.75
+                ? "O pedido chega sozinho. O site já conduz."
+                : "Resultado: 18 horas por semana voltam para a operação.";
+        if (fase) fase.textContent = "Teste ao vivo · " + phase;
+        if (linha) linha.textContent = text;
+        const passo = document.getElementById("passo");
+        const horas = document.getElementById("horas");
+        const manuais = document.getElementById("manuais");
+        if (passo) passo.textContent = index + "/48";
+        if (horas) horas.textContent = Math.round(shown * 18) + "h";
+        if (manuais) manuais.textContent = String(Math.max(0, 14 - Math.round(shown * 14)));
         requestAnimationFrame(paint);
       }
       function onScroll() {

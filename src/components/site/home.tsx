@@ -210,7 +210,7 @@ function ScrubFilm() {
           alt="Figura no gelo com um pinguim. No celular, role a tela para ele andar."
           width={840}
           height={734}
-          className={mobile ? "mx-auto h-auto max-h-[68vh] w-full object-contain" : "h-auto w-full bg-ink object-contain"}
+          className={mobile ? "mx-auto h-auto max-h-[50vh] w-full object-contain" : "h-auto w-full bg-ink object-contain"}
         />
         <div className="mt-3 flex items-center gap-3">
           <p className="text-xs font-medium tracking-widest text-cyan uppercase">{mobile ? "Role para a frente" : "Mova o cursor"}</p>
@@ -218,7 +218,45 @@ function ScrubFilm() {
             <div className="h-px bg-cyan" style={{ width: `${Math.round(((index - 1) / (SCRUB_FRAMES - 1)) * 100)}%` }} />
           </div>
         </div>
+        {mobile ? <WalkTest index={index} /> : null}
       </figure>
+    </div>
+  );
+}
+
+function WalkTest({ index }: { index: number }) {
+  const progress = (index - 1) / (SCRUB_FRAMES - 1);
+  const phase =
+    progress < 0.25 ? "Diagnóstico" : progress < 0.5 ? "Automação" : progress < 0.75 ? "Site no ar" : "Resultado";
+  const line =
+    progress < 0.25
+      ? "O fluxo ainda é manual. O teste mede a fila."
+      : progress < 0.5
+        ? "A automação entra. As etapas começam a cair."
+        : progress < 0.75
+          ? "O pedido chega sozinho. O site já conduz."
+          : "Resultado: 18 horas por semana voltam para a operação.";
+  const horas = Math.round(progress * 18);
+  const manuais = Math.max(0, 14 - Math.round(progress * 14));
+
+  return (
+    <div className="mt-3 rounded-2xl border border-cyan/30 bg-surface px-4 py-3">
+      <p className="text-xs font-medium tracking-widest text-cyan uppercase">Teste ao vivo · {phase}</p>
+      <p className="mt-1 text-sm text-pretty text-snow">{line}</p>
+      <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
+        <div>
+          <dt className="text-[10px] tracking-wide text-muted uppercase">Passo</dt>
+          <dd className="text-lg font-semibold text-snow">{index}/48</dd>
+        </div>
+        <div>
+          <dt className="text-[10px] tracking-wide text-muted uppercase">Horas</dt>
+          <dd className="text-lg font-semibold text-cyan">{horas}h</dd>
+        </div>
+        <div>
+          <dt className="text-[10px] tracking-wide text-muted uppercase">Manuais</dt>
+          <dd className="text-lg font-semibold text-snow">{manuais}</dd>
+        </div>
+      </dl>
     </div>
   );
 }
