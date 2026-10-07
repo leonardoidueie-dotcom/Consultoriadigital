@@ -149,9 +149,19 @@ function scrubSrc(index: number) {
 }
 
 function ScrubFilm() {
+  const stageRef = useRef<HTMLDivElement>(null);
   const target = useRef(0);
   const shown = useRef(0);
   const [index, setIndex] = useState(1);
+  const [mobile, setMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 1023px)");
+    const apply = () => setMobile(query.matches);
+    apply();
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
+  }, []);
 
   useEffect(() => {
     for (let frame = 1; frame <= SCRUB_FRAMES; frame += 1) {
@@ -172,30 +182,45 @@ function ScrubFilm() {
       const width = window.innerWidth || 1;
       target.current = Math.min(1, Math.max(0, event.clientX / width));
     };
-    window.addEventListener("pointermove", onMove, { passive: true });
+    const onScroll = () => {
+      const stage = stageRef.current;
+      if (!stage) return;
+      const distance = stage.offsetHeight - window.innerHeight;
+      const passed = Math.min(Math.max(-stage.getBoundingClientRect().top, 0), Math.max(distance, 0));
+      target.current = distance > 0 ? passed / distance : 0;
+    };
+    if (mobile) {
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    } else {
+      window.addEventListener("pointermove", onMove, { passive: true });
+    }
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [mobile]);
 
   return (
-    <figure>
-      <img
-        src={scrubSrc(index)}
-        alt="Figura no gelo com um pinguim. Mova o cursor para avançar a cena."
-        width={840}
-        height={734}
-        className="h-auto w-full bg-ink object-contain"
-      />
-      <div className="mt-3 flex items-center gap-3">
-        <p className="text-xs font-medium tracking-widest text-cyan uppercase">Mova o cursor</p>
-        <div className="h-px flex-1 bg-snow/20">
-          <div className="h-px bg-cyan" style={{ width: `${Math.round(((index - 1) / (SCRUB_FRAMES - 1)) * 100)}%` }} />
+    <div ref={stageRef} className={mobile ? "relative h-[230vh]" : undefined}>
+      <figure className={mobile ? "sticky top-20" : undefined}>
+        <img
+          src={scrubSrc(index)}
+          alt="Figura no gelo com um pinguim. No celular, role a tela para ele andar."
+          width={840}
+          height={734}
+          className="h-auto w-full bg-ink object-contain"
+        />
+        <div className="mt-3 flex items-center gap-3">
+          <p className="text-xs font-medium tracking-widest text-cyan uppercase">{mobile ? "Role para a frente" : "Mova o cursor"}</p>
+          <div className="h-px flex-1 bg-snow/20">
+            <div className="h-px bg-cyan" style={{ width: `${Math.round(((index - 1) / (SCRUB_FRAMES - 1)) * 100)}%` }} />
+          </div>
         </div>
-      </div>
-    </figure>
+      </figure>
+    </div>
   );
 }
 
@@ -679,7 +704,7 @@ export function HomePage() {
               Estratégia. Inovação. <span className="text-cyan">Resultados.</span>
             </h1>
             <p className="mt-4 max-w-md text-pretty text-muted">
-              Automação, websites e sistemas sob medida. A cena anda com o cursor.
+              Automação, websites e sistemas sob medida. No celular, role a tela e ele anda para a frente.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <a href="#laboratorio" className="press inline-flex h-12 items-center justify-center rounded-full bg-cyan px-6 text-sm font-medium text-ink">
